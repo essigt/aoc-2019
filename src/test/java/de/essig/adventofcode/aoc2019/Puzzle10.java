@@ -148,9 +148,9 @@ public class Puzzle10 {
     @Test
     void puzzle() {
 
-        System.out.println(prettyPrint(runProgramm(programmCode, inputValue))); // Answer:
+        System.out.println(prettyPrint(runProgramm(programmCode, inputValue))); // Answer: 7.731.427
 
-        // Flasch: 1891490, your answer is too low.
+        // Flasch: 1.891.490, your answer is too low.
     }
 
 
