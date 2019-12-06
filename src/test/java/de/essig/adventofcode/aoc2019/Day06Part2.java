@@ -1,31 +1,30 @@
 package de.essig.adventofcode.aoc2019;
 
 import de.essig.adventofcode.aoc2019.orbit.Orbit;
-import de.essig.adventofcode.aoc2019.orbit.OrbitCheckSum;
 import de.essig.adventofcode.aoc2019.orbit.OrbitGraphParser;
+import de.essig.adventofcode.aoc2019.orbit.OrbitTransfer;
+
+import org.hamcrest.Matchers;
 
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import static org.hamcrest.Matchers.is;
-
 
 /**
  * @author  Tim Essig - essig@synyx.de
  */
-public class Puzzle11 {
+public class Day06Part2 {
 
     private OrbitGraphParser orbitGraphParser = new OrbitGraphParser();
+    private OrbitTransfer orbitTransfer = new OrbitTransfer();
 
     @Test
-    void runTest() {
+    void test() {
 
-        Orbit COM = orbitGraphParser.parseGraph(Puzzle11Data.TEST_INPUT);
+        Orbit COM = orbitGraphParser.parseGraph(Puzzle11Data.TRANSFERE_TEST_INPUT);
 
-        COM.prettyPrint();
-
-        assertThat(OrbitCheckSum.calculateChecksum(COM).getSum(), is(42));
+        assertThat(orbitTransfer.calculateOrbitTransfers(COM, "YOU", "SAN"), Matchers.is(4));
     }
 
 
@@ -34,6 +33,6 @@ public class Puzzle11 {
 
         Orbit COM = orbitGraphParser.parseGraph(Puzzle11Data.INPUT);
 
-        assertThat(OrbitCheckSum.calculateChecksum(COM).getSum(), is(150150));
+        assertThat(orbitTransfer.calculateOrbitTransfers(COM, "YOU", "SAN"), Matchers.is(352));
     }
 }

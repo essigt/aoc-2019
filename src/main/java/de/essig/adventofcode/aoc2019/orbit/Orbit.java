@@ -2,6 +2,7 @@ package de.essig.adventofcode.aoc2019.orbit;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 /**
@@ -46,6 +47,28 @@ public class Orbit {
     public List<Orbit> getChildren() {
 
         return children;
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+
+        if (this == o)
+            return true;
+
+        if (o == null || getClass() != o.getClass())
+            return false;
+
+        Orbit orbit = (Orbit) o;
+
+        return center.equals(orbit.center);
+    }
+
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(center);
     }
 
 
