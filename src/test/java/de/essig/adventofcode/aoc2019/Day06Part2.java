@@ -22,7 +22,7 @@ public class Day06Part2 {
     @Test
     void test() {
 
-        Orbit COM = orbitGraphParser.parseGraph(Puzzle11Data.TRANSFERE_TEST_INPUT);
+        Orbit COM = orbitGraphParser.parseGraph(Day06Data.TRANSFERE_TEST_INPUT);
 
         assertThat(orbitTransfer.calculateOrbitTransfers(COM, "YOU", "SAN"), Matchers.is(4));
     }
@@ -31,7 +31,7 @@ public class Day06Part2 {
     @Test
     void runCompetition() {
 
-        Orbit COM = orbitGraphParser.parseGraph(Puzzle11Data.INPUT);
+        Orbit COM = orbitGraphParser.parseGraph(Day06Data.INPUT);
 
         assertThat(orbitTransfer.calculateOrbitTransfers(COM, "YOU", "SAN"), Matchers.is(352));
     }
