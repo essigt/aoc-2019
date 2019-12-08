@@ -7,8 +7,6 @@ public class SpaceImageParser {
 
         SpaceImage spaceImage = new SpaceImage();
 
-
-        //Parse whole image as one row... good enought for the task at hand
         int layerSize = rows * cols;
         int layerCount = image.length() / layerSize;
 
@@ -21,6 +19,8 @@ public class SpaceImageParser {
             SpaceImage.Layer layer = new SpaceImage.Layer();
             SpaceImage.Row row = new SpaceImage.Row();
             layer.addRow(row);
+
+            //Parse whole image as one row... good enought for the task at hand
             for(char ch : layerAsString.toCharArray()) {
                 Integer pixel = Integer.valueOf(String.valueOf(ch));
                 row.addPixel(pixel);
@@ -28,8 +28,6 @@ public class SpaceImageParser {
 
             spaceImage.addLayer(layer);
         }
-
-
 
         return spaceImage;
 

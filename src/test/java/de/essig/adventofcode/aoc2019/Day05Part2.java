@@ -139,7 +139,7 @@ import static org.hamcrest.Matchers.is;
  *
  * <p>What is the diagnostic code for system ID 5?</p>
  */
-public class Puzzle10 {
+public class Day05Part2 {
 
     private int inputValue = 5;
     private String programmCode =

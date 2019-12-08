@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class Puzzle01 {
+public class Day01Part1 {
 
     private final String testInput = "109506\n" +
             "140405\n" +

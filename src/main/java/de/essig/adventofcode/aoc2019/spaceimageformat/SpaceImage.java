@@ -68,14 +68,4 @@ public class SpaceImage {
             pixels.add(i, newValue);
         }
     }
-
-    public static class Pixel {
-        private int r, g, b;
-
-        public Pixel(int r, int g, int b) {
-            this.r = r;
-            this.g = g;
-            this.b = b;
-        }
-    }
 }

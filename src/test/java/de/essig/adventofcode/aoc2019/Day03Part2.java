@@ -12,7 +12,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 
-public class Puzzle06 {
+public class Day03Part2 {
 
     private enum Direction {
 

@@ -85,7 +85,7 @@ import static org.hamcrest.Matchers.is;
  * <p>After providing 1 to the only input instruction and passing all the tests, what diagnostic code does the program
  * produce?</p>
  */
-public class Puzzle09 {
+public class Day05Part1 {
 
     private int inputValue = 1;
     private String programmCode =

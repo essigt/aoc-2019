@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 
-public class Puzzle08 {
+public class Day04Part2 {
 
     private static final int lowerLimit = 158126;
     private static final int upperLimit = 624574;
