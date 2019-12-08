@@ -5,14 +5,16 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.OptionalInt;
 import java.util.stream.Collectors;
 
 import static de.essig.adventofcode.aoc2019.Day07Data.*;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.in;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 
 public class Day07Part2 {
 
@@ -21,56 +23,24 @@ public class Day07Part2 {
     @Test
     void testPermutations() {
 
-        int[] elements = new int[]{5,6,7,8,9};
-        int n = 5;
-        int[] indexes = new int[n];
-        for (int i = 0; i < n; i++) {
-            indexes[i] = 0;
-        }
+        OptionalInt max = Permutations.of(asList(5, 6, 7, 8, 9)).mapToInt(per ->
+                testAmplifierConfiguraiton(PROGRAM, per.collect(toList()))
+        ).max();
 
-
-        List<Integer> maxPermutation = emptyList();
-        int maxResult = 0;
-
-        int i = 0;
-        while (i < 5) {
-            if (indexes[i] < i) {
-                swap(elements, i % 2 == 0 ?  0: indexes[i], i);
-
-                List<Integer> phases = Arrays.stream(elements).boxed().collect(Collectors.toList());
-                int result = testAmplifierConfiguraiton(PROGRAM, phases);
-                if(result > maxResult) {
-                    maxResult = result;
-                    maxPermutation = phases;
-                }
-
-                indexes[i]++;
-                i = 0;
-            }
-            else {
-                indexes[i] = 0;
-                i++;
-            }
-        }
-
+        int maxResult = max.getAsInt();
         System.out.println("MaxResult " + maxResult);
-        System.out.println("Max Permutation: " + maxPermutation.toString());
+
+
+        assertThat(maxResult, is(14897241));
 
 
     }
-
-    private void swap(int[] input, int a, int b) {
-        int tmp = input[a];
-        input[a] = input[b];
-        input[b] = tmp;
-    }
-
 
     @Test
     void testSamples() {
 
-        // Still failing...
         assertThat(testAmplifierConfiguraiton(TEST_DATA_FOUR, asList(9,8,7,6,5)), is(139629729));
+        assertThat(testAmplifierConfiguraiton(TEST_DATA_FIVE, asList(9,7,8,5,6)), is(18216));
     }
 
 
@@ -88,24 +58,29 @@ public class Day07Part2 {
         Context fifthAmp = runProgramm(programm,0, new ArrayList<>(asList(ampPhases.get(4), fourthAmp.getOutput().get(0))));
 
         boolean halted = false;
+        int lastThrustersOutput = 0;
+
         while(!halted) {
 
-            firstAmp = runProgramm( prettyPrint(firstAmp), fifthAmp.getInstructionPointer(), new ArrayList<>(asList(ampPhases.get(0), fifthAmp.getOutput().get(0))));
+            firstAmp = runProgramm( prettyPrint(firstAmp), firstAmp.getInstructionPointer(), fifthAmp.getOutput());
 
-            secondAmp = runProgramm(prettyPrint(secondAmp), secondAmp.getInstructionPointer(), new ArrayList<>(asList(ampPhases.get(1), firstAmp.getOutput().get(0))));
+            secondAmp = runProgramm(prettyPrint(secondAmp), secondAmp.getInstructionPointer(),  firstAmp.getOutput());
 
-            thirdAmp = runProgramm(prettyPrint(thirdAmp), thirdAmp.getInstructionPointer(), new ArrayList<>(asList(ampPhases.get(2), secondAmp.getOutput().get(0))));
+            thirdAmp = runProgramm(prettyPrint(thirdAmp), thirdAmp.getInstructionPointer(), secondAmp.getOutput());
 
-            fourthAmp = runProgramm(prettyPrint(fourthAmp), fourthAmp.getInstructionPointer(),new ArrayList<>(asList(ampPhases.get(3), thirdAmp.getOutput().get(0))));
+            fourthAmp = runProgramm(prettyPrint(fourthAmp), fourthAmp.getInstructionPointer(),thirdAmp.getOutput());
 
-            fifthAmp = runProgramm(prettyPrint(fifthAmp), fifthAmp.getInstructionPointer(), new ArrayList<>(asList(ampPhases.get(4), fourthAmp.getOutput().get(0))));
+            fifthAmp = runProgramm(prettyPrint(fifthAmp), fifthAmp.getInstructionPointer(), fourthAmp.getOutput());
 
             halted = fifthAmp.isHalted();
-            System.out.println("iterate... halted: " + halted);
+
+            if(!halted) {
+                lastThrustersOutput = fifthAmp.getOutput().get(0);
+            }
         }
 
 
-        return fifthAmp.getOutput().get(0);
+        return lastThrustersOutput;
     }
 
     Context runProgramm(String programmCode, int instructionPointer, List<Integer> inputs) {
@@ -114,8 +89,6 @@ public class Day07Part2 {
         Context context = new Context(programmAsInt, inputs);
 
         boolean stop = false;
-        //int instructionPointer = 0;
-
 
         while (!stop) {
             int instruction = getOpCode(programmAsInt.get(instructionPointer));
@@ -265,12 +238,6 @@ public class Day07Part2 {
     }
 
 
-    int getThirdParamMode(int instruction) {
-
-        return (instruction / 10000) % 10;
-    }
-
-
     private List<Integer> parseProgramm(String input) {
 
         List<Integer> programm = new ArrayList<>();
@@ -290,7 +257,7 @@ public class Day07Part2 {
         return context.getProgrammAsIntEnd().stream().map(String::valueOf).collect(Collectors.joining(","));
     }
 
-    private class Context {
+    private static class Context {
 
         private List<Integer> programmAsIntOriginal;
         private List<Integer> programmAsIntEnd;
