@@ -1,11 +1,9 @@
 package de.essig.adventofcode.aoc2019;
 
-
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -13,17 +11,17 @@ import static de.essig.adventofcode.aoc2019.Day07Data.*;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.in;
 import static org.hamcrest.Matchers.is;
 
-public class Day07Part1 {
+public class Day07Part2 {
 
 
 
     @Test
     void testPermutations() {
 
-        int[] elements = new int[]{0,1,2,3,4};
+        int[] elements = new int[]{5,6,7,8,9};
         int n = 5;
         int[] indexes = new int[n];
         for (int i = 0; i < n; i++) {
@@ -71,45 +69,58 @@ public class Day07Part1 {
     @Test
     void testSamples() {
 
-        assertThat(testAmplifierConfiguraiton(TEST_DATA_ONE, asList(4, 3, 2, 1, 0)), is(43210));
-        assertThat(testAmplifierConfiguraiton(TEST_DATA_TWO, asList(0,1,2,3,4)), is(54321));
-        assertThat(testAmplifierConfiguraiton(TEST_DATA_THREE, asList(1, 0,4,3,2)), is(65210));
+        assertThat(testAmplifierConfiguraiton(TEST_DATA_FOUR, asList(9,8,7,6,5)), is(139629729));
     }
 
 
     public int testAmplifierConfiguraiton(String programm, List<Integer> ampPhases) {
 
 
-        Context firstAmp = runProgramm(programm, new ArrayList<>(asList(ampPhases.get(0), 0)));
-        //System.out.println("First Amp Output: " + firstAmp.getOutput());
+        Context firstAmp = runProgramm(programm, 0, new ArrayList<>(asList(ampPhases.get(0), 0)));
 
-        Context secondAmp = runProgramm(programm, new ArrayList<>(asList(ampPhases.get(1), firstAmp.getOutput().get(0))));
-        //System.out.println("Second Amp Output: " + secondAmp.getOutput());
+        Context secondAmp = runProgramm(programm, 0,new ArrayList<>(asList(ampPhases.get(1), firstAmp.getOutput().get(0))));
 
-        Context thirdAmp = runProgramm(programm, new ArrayList<>(asList(ampPhases.get(2), secondAmp.getOutput().get(0))));
-        //System.out.println("Third Amp Output: " + thirdAmp.getOutput());
+        Context thirdAmp = runProgramm(programm,0, new ArrayList<>(asList(ampPhases.get(2), secondAmp.getOutput().get(0))));
 
-        Context fourthAmp = runProgramm(programm, new ArrayList<>(asList(ampPhases.get(3), thirdAmp.getOutput().get(0))));
-        //System.out.println("Fourth Amp Output: " + fourthAmp.getOutput());
+        Context fourthAmp = runProgramm(programm,0, new ArrayList<>(asList(ampPhases.get(3), thirdAmp.getOutput().get(0))));
 
-        Context fifthAmp = runProgramm(programm, new ArrayList<>(asList(ampPhases.get(4), fourthAmp.getOutput().get(0))));
-        //System.out.println("Fourth Amp Output: " + fifthAmp.getOutput());
+        Context fifthAmp = runProgramm(programm,0, new ArrayList<>(asList(ampPhases.get(4), fourthAmp.getOutput().get(0))));
+
+        boolean halted = false;
+        while(!halted) {
+
+            firstAmp = runProgramm( prettyPrint(firstAmp), fifthAmp.getInstructionPointer(), new ArrayList<>(asList(ampPhases.get(0), fifthAmp.getOutput().get(0))));
+
+            secondAmp = runProgramm(prettyPrint(secondAmp), secondAmp.getInstructionPointer(), new ArrayList<>(asList(ampPhases.get(1), firstAmp.getOutput().get(0))));
+
+            thirdAmp = runProgramm(prettyPrint(thirdAmp), thirdAmp.getInstructionPointer(), new ArrayList<>(asList(ampPhases.get(2), secondAmp.getOutput().get(0))));
+
+            fourthAmp = runProgramm(prettyPrint(fourthAmp), fourthAmp.getInstructionPointer(),new ArrayList<>(asList(ampPhases.get(3), thirdAmp.getOutput().get(0))));
+
+            fifthAmp = runProgramm(prettyPrint(fifthAmp), fifthAmp.getInstructionPointer(), new ArrayList<>(asList(ampPhases.get(4), fourthAmp.getOutput().get(0))));
+
+            halted = fifthAmp.isHalted();
+            System.out.println("iterate... halted: " + halted);
+        }
+
 
         return fifthAmp.getOutput().get(0);
     }
 
-    Context runProgramm(String programmCode, List<Integer> inputs) {
+    Context runProgramm(String programmCode, int instructionPointer, List<Integer> inputs) {
 
         List<Integer> programmAsInt = parseProgramm(programmCode);
         Context context = new Context(programmAsInt, inputs);
 
         boolean stop = false;
-        int instructionPointer = 0;
+        //int instructionPointer = 0;
+
 
         while (!stop) {
             int instruction = getOpCode(programmAsInt.get(instructionPointer));
 
             if (instruction == 99) {
+                context.setHalted(true);
                 stop = true;
             } else if (instruction == 1) { // ADD
 
@@ -147,6 +158,7 @@ public class Day07Part1 {
                 int output = getParamAccordingToMode(programmAsInt, instructionPointer, 0);
 
                 context.getOutput().add(output);
+                stop = true; // Modification for Day07 Part 02 -> end run when output
 
                 instructionPointer += 2;
             } else if (instruction == 5) { // jump-if-true
@@ -207,6 +219,7 @@ public class Day07Part1 {
             }
         }
 
+        context.setInstructionPointer(instructionPointer);
         context.setProgrammAsIntEnd(programmAsInt);
 
         return context;
@@ -278,10 +291,12 @@ public class Day07Part1 {
 
     private class Context {
 
-        List<Integer> programmAsIntOriginal;
-        List<Integer> programmAsIntEnd;
-        List<Integer> input;
-        List<Integer> output;
+        private List<Integer> programmAsIntOriginal;
+        private List<Integer> programmAsIntEnd;
+        private List<Integer> input;
+        private List<Integer> output;
+        private boolean halted = false;
+        private int instructionPointer;
 
         public Context(List<Integer> programmAsIntOriginal, List<Integer> input) {
 
@@ -317,6 +332,22 @@ public class Day07Part1 {
         public List<Integer> getOutput() {
 
             return output;
+        }
+
+        public void setHalted(boolean halted) {
+            this.halted = halted;
+        }
+
+        public boolean isHalted() {
+            return halted;
+        }
+
+        public void setInstructionPointer(int instructionPointer) {
+            this.instructionPointer = instructionPointer;
+        }
+
+        public int getInstructionPointer() {
+            return instructionPointer;
         }
     }
 }
