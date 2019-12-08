@@ -1,8 +1,5 @@
 package de.essig.adventofcode.aoc2019.orbit;
 
-/**
- * @author  Tim Essig - essig@synyx.de
- */
 public class OrbitCheckSum {
 
     public static Distance calculateChecksum(Orbit com) {

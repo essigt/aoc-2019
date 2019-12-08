@@ -11,9 +11,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 
-/**
- * @author  Tim Essig - essig@synyx.de
- */
 public class Day06Part1 {
 
     private OrbitGraphParser orbitGraphParser = new OrbitGraphParser();

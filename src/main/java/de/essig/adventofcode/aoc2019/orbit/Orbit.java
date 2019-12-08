@@ -5,9 +5,6 @@ import java.util.List;
 import java.util.Objects;
 
 
-/**
- * @author  Tim Essig - essig@synyx.de
- */
 public class Orbit {
 
     private String center;

@@ -4,9 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-/**
- * @author  Tim Essig - essig@synyx.de
- */
 public class OrbitGraphParser {
 
     public Orbit parseGraph(String grap) {

@@ -4,9 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-/**
- * @author  Tim Essig - essig@synyx.de
- */
 public class OrbitTransfer {
 
     public int calculateOrbitTransfers(Orbit COM, String from, String to) {

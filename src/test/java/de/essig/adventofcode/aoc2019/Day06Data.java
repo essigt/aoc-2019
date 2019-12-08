@@ -1,8 +1,5 @@
 package de.essig.adventofcode.aoc2019;
 
-/**
- * @author  Tim Essig - essig@synyx.de
- */
 public class Day06Data {
 
     public static final String TRANSFERE_TEST_INPUT = "COM)B\n"

@@ -11,9 +11,6 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 
-/**
- * @author  Tim Essig - essig@synyx.de
- */
 public class Day06Part2 {
 
     private OrbitGraphParser orbitGraphParser = new OrbitGraphParser();
