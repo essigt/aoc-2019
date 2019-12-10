@@ -26,7 +26,7 @@ import static java.util.Comparator.comparing;
 /**
  * @author  Tim Essig - essig@synyx.de
  */
-public class Day10 {
+public class Day10Part1 {
 
     @Test
     void parserShouldReturnCorrectAmountOfAsteroids() {
