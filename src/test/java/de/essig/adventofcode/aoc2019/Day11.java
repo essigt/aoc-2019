@@ -178,12 +178,7 @@ public class Day11 {
         }
 
 
-        System.out.println("Painted at leased once: " + hull.size());
-        assertThat(hull.size(), is(1985));
-
-
-        paintHull();
-
+        paintHull(); // Answer = BLCZCJLZ
     }
 
 
@@ -195,7 +190,7 @@ public class Day11 {
         int yMax = hull.keySet().stream().mapToInt(Tile::getY).max().orElse(0);
 
 
-        for(int y = yMin; y <= yMax; y++) {
+        for(int y = yMax; y >= yMin; y--) {
             for(int x = xMin; x <= xMax; x++) {
                 System.out.print(getColor(x,y) == 1 ? "X" : " ");
             }
@@ -208,12 +203,10 @@ public class Day11 {
     }
 
     private Context runProgramm(Map<Long, Long> programmAsInt, long instructionPointer, List<Long> inputs) {
-
-
         Context context = new Context(programmAsInt, inputs);
 
         boolean stop = false;
-        relativeBase = 0;
+
 
         while (!stop) {
             int instruction = getOpCode(programmAsInt.get(instructionPointer));
