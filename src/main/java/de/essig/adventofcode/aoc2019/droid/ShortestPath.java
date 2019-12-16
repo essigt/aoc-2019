@@ -1,65 +1,70 @@
 package de.essig.adventofcode.aoc2019.droid;
 
-import scala.concurrent.impl.FutureConvertersImpl;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ShortestPath {
 
+    private Set<Field> queue = new HashSet<>();
+    private Set<Field> visited = new HashSet<>();
+    private Map<Field, Integer> costs = new HashMap<>();
+    private Map<Field, Long> map;
+    private Map<Field, Field> precursors = new HashMap<>();
 
-    public int shortestPath(int startX, int startY, int endX, int endY, Map<Field, Long> map) {
-
-        Path path = deepenPath(new Path(new Field(startX, startY)), endX, endY, map);
-
-        System.out.println("Path: " + path.getFields());
-        return path.getFields().size();
-    }
-
-
-    private Path deepenPath(Path path, int endX, int endY, Map<Field, Long> map) {
-        //System.out.println("Deepen Path at " + path.getLastField());
-        Field lastField = path.getLastField();
-        List<Field> neigbours = findNeigbours(lastField, map);
-
-        neigbours = neigbours.stream().filter(f -> !path.contains(f)).collect(Collectors.toList());
-
-        if(neigbours.size() == 0) {
-            return null;
+    public int shortestPath(Field start, Field end, Map<Field, Long> map) {
+        //Init
+        this.map = map;
+        for(Field field : map.keySet()) {
+            costs.put(field, Integer.MAX_VALUE);
         }
+        costs.put(start, 0);
+        queue.add(start);
 
-        List<Path> goals = new ArrayList<>();
+        // Iterate
+        while(!queue.isEmpty()) {
+            Field cheapestField = getCheapestField();
+            queue.add(cheapestField);
+            int cost = costs.get(cheapestField);
 
-        for(Field neigbour : neigbours) {
-            Path newPath = new Path(path, neigbour);
-            if(neigbour.getX() == endX && neigbour.getY() == endY) {
-                System.out.println("Found Goal");
-                goals.add(path);
-            } else {
-                Path path1 = deepenPath(newPath, endX, endY, map);
-                if(path1 != null) {
-                    return path1;
+            List<Field> neigbours = findNeigbours(cheapestField, map);
+            neigbours.removeAll(visited); // Remove all visited
+            for(Field neigbour : neigbours) {
+                int currentCosts = cost + 1;
+                if(currentCosts < costs.get(neigbour)) {
+                    costs.put(neigbour, currentCosts);
+                    precursors.put(neigbour, cheapestField);
                 }
+
             }
+
+            queue.addAll(neigbours);
+            queue.remove(cheapestField);
+            visited.add(cheapestField);
         }
 
 
-        Path shortest= null;
-        int length = Integer.MAX_VALUE;
+        // Find Patch
+        System.out.println("Cost: " + costs.get(end));
+        System.out.println("Most Expensive:" + costs.get(getMostExpensiveField()));
 
-        for(Path goal : goals) {
-            if(goal.getFields().size() < length) {
-                shortest = goal;
-                length = goal.getFields().size();
-            }
+        Field precursor = precursors.get(end);
+        while(precursor != start && precursor != null) {
+            //System.out.println("Precursor: " + precursor);
+            precursor = precursors.get(precursor);
         }
 
-        return shortest;
+
+
+        return costs.get(end);
     }
 
+    private Field getCheapestField() {
+        return costs.entrySet().stream().filter(e -> !visited.contains(e.getKey())).min(Comparator.comparing(Map.Entry::getValue)).map(Map.Entry::getKey).get();
+    }
 
+    private Field getMostExpensiveField() {
+        return costs.entrySet().stream().filter(e -> e.getValue() != 0).filter(e -> !visited.contains(e.getKey())).max(Comparator.comparing(Map.Entry::getValue)).map(Map.Entry::getKey).get();
+    }
 
 
     private List<Field> findNeigbours(Field field, Map<Field, Long> map) {
@@ -67,21 +72,35 @@ public class ShortestPath {
         int startX = field.getX();
         int startY = field.getY();
 
-        for( int y = startY-1; y <= startY+1; y++) {
-            for( int x = startX-1; x <= startX+1; x++) {
 
-                if(x == startX && y == startY) { // Skip the field itself
-                    continue;
-                }
+        Field currentField = new Field(startX,startY+1);
+        long fieldValue = map.getOrDefault(currentField, -1L);
 
-                Field currentField = new Field(x,y);
-                long fieldValue = map.getOrDefault(currentField, -1L);
-
-                if(fieldValue == 1 || fieldValue == 2) {
-                    neigbours.add(currentField);
-                }
-            }
+        if(fieldValue == 1 || fieldValue == 2) {
+            neigbours.add(currentField);
         }
+
+        currentField = new Field(startX,startY-1);
+        fieldValue = map.getOrDefault(currentField, -1L);
+
+        if(fieldValue == 1 || fieldValue == 2) {
+            neigbours.add(currentField);
+        }
+
+        currentField = new Field(startX+1,startY);
+        fieldValue = map.getOrDefault(currentField, -1L);
+
+        if(fieldValue == 1 || fieldValue == 2) {
+            neigbours.add(currentField);
+        }
+
+        currentField = new Field(startX-1,startY);
+        fieldValue = map.getOrDefault(currentField, -1L);
+
+        if(fieldValue == 1 || fieldValue == 2) {
+            neigbours.add(currentField);
+        }
+
 
         return neigbours;
     }
