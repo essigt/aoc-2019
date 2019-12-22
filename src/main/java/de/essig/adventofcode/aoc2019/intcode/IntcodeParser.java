@@ -7,9 +7,8 @@ public class IntcodeParser {
 
     public static Map<Long, Long> parseProgramm(String input) {
 
-        System.out.println("Parsing intcode input...");
-
-        Map<Long, Long> programm = new HashMap<>();
+        //System.out.println("Parsing intcode input...");
+          Map<Long, Long> programm = new HashMap<>();
 
         String[] split = input.split(",");
 
@@ -20,7 +19,8 @@ public class IntcodeParser {
             pos++;
         }
 
-        System.out.println("Parsed intcode input of length " + pos);
+        //System.out.println("Parsed intcode input of length " + pos);
+
 
         return programm;
     }
